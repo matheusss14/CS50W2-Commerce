@@ -1,0 +1,36 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if error %}
+        <h2 style="color: red;">
+            {{ error }}
+        </h2>
+    {% endif %}
+    <form action="{% url 'create' %}" method="post" class="create">
+        {% csrf_token %}
+        <div class="field">Title: {{ form.name }}</div>
+        <div class="field">Description: {{ form.desc }}</div>
+        <div class="field">Starting bid: {{ form.startingBid }}</div>
+        <div class="field">Category: {{ form.category }}</div>
+        <div class="field">Image (optional): {{ form.image }}</div>
+
+        <input type="submit">
+    </form>
+
+    <style>
+        textarea {
+            resize: none;
+            }
+
+        .create {
+            display: flex;
+            flex-direction: column;
+            width: 500px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+{% endblock %}

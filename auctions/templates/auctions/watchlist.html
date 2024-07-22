@@ -1,0 +1,23 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; justify-items: center; max-width: 1920px;">
+        {% for item in list %}
+            <a href="{% url 'product' item.id %}">
+                <div class="card" style="width: 400px; height: 400px; margin: 10px;">
+                    <div style="height: 40%;">
+                        <img class="card-img-top" src="{{ item.image }}" style="max-width:400px; max-height: 160px; object-fit: contain;">
+                    </div>
+
+                    <div class="card-body" style="color: black;">
+                        <h3 class="card-title">{{ item.name }}</h3>
+                        <p class="card-text">{{ item.desc }}</p>
+                        <h4 class="card-title">${{ item.startingBid }}</h4>
+                    </div>
+                </div>
+            </a>
+
+            {% empty %}
+            <p> No listings to display. </p>
+        {% endfor %}
+{% endblock %}

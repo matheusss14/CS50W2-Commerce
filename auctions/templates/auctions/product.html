@@ -1,0 +1,99 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if info.active == False %}
+        <div style="background-color: #ffffff; position: absolute; margin-top: 150px; margin-left: 20px; z-index: 2; box-shadow: 3px 3px 5px black;">
+            <h1>THIS LISTING IS CLOSED. WINNER: {{ info.owner }} FOR ${{ bids.bid }}! </h1>
+        </div>
+
+        <style>
+            .content {
+                opacity: 40%;
+            }
+        </style>
+    {% endif %}
+    <div style="display: flex;" class="content">
+        <div style="max-width: 800px;">
+            <img src="{{ info.image }}" style="max-width: 600px; max-height: 600px;">
+        </div>
+        <div style="margin-left: 40px;">
+            <div>
+                <h1>{{ info.name }}</h1>
+                <h6>{{ info.desc }}</h6>
+                {% if error %}
+                    <h2> {{ error }} </h2>
+                {% endif %}
+                {% if bids %}
+                    <h2>${{ bids.bid }}</h2>
+                    {% else %}
+                    <h2>${{ info.startingBid }}</h2>
+                {% endif %}
+                <p>Category: {{ info.category.category }}</p>
+            </div>
+            
+            <div style="margin-top: 50px;">
+            {% if user.is_authenticated %}
+                {% if watchlisted %}
+                    <form action="{% url 'removeWatchlist' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value='{{ info.id }}' name="product">
+                        <input type="submit" value="Remove from Watchlist">
+                    </form>
+                {% else %}
+                    <form action="{% url 'addWatchlist' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value='{{ info.id }}' name="product">
+                        <input type="submit" value="Add to Watchlist">
+                    </form>
+                {% endif %}
+
+                <form action="{% url 'addBid' %}" method="post" style="margin-top: 10px;">
+                    {% csrf_token %}
+                    {{ form.value }}
+                    <input type="hidden" value="{{ info.id }}" name="product">
+                    <input type="submit" value="Place bid">
+                </form>
+
+                {% if request.user == info.owner %}
+                    <form action="{% url 'close' %}" method="post" style="margin-top: 10px;">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ info.id }}" name="product">
+                        <input type="submit" value="Close(end) listing">
+                    </form>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; margin-top: 50px;">
+        <div style="width: 1000px; display: flex; flex-direction: column; align-items: center;">
+            <h1>Comments</h1>
+            <form action="{% url 'comment' %}" method="post" style="display: flex; height: 50px;">
+                {% csrf_token %}
+                {{ comment.comments }}
+                <input type="hidden" value="{{ info.id }}" name="product">
+                <input type="submit" value="Post comment" style="height: 50px">
+            </form>
+
+
+            {% for comment in AllComments %}
+                <div style="display: flex; flex-direction: column; border: 1px solid #e4e4e4; padding: 20px; border-radius: 20px; margin-top: 20px; width: 500px;">
+                    <h6>{{ comment.commenter }}</h6>
+                    <h6>{{ comment.time }}</h6>
+                    <h3>{{ comment.comment }}</h3>
+                </div>
+
+                <style>
+                textarea {
+                    resize: none;
+                    width: 500px;
+                }
+                </style>
+                {% empty %}
+                <h2>No comments!</h2>
+            {% endfor %}
+        </div>
+    </div>
+    
+{% endblock %}
